@@ -70,7 +70,7 @@ for i, item in enumerate(ITEMS):
 details_text = "\n".join(details_list)
 
 # 💡 リアルタイムで合計点数を表示する
-st.metric(label="現在の合計点数", value=f"{total_score} / 10 点")
+st.metric(label="現在の合計点数", value=f"{total_score} / 3 点")
 
 if total_score >= 3:
     st.warning("おとなしく休もう")
