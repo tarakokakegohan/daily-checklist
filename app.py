@@ -62,9 +62,13 @@ for i, item in enumerate(ITEMS):
     
     if chk:
         total_score += item["points"]
-        details_list.append(f"❗{item['text']} ({item['points']}点)")
-    else:
-        details_list.append(f"⬜{item['text']}")
+        # 🟢 チェックがある項目だけをリストに追加する
+        details_list.append(f"❗ {item['text']} ({item['points']}点)")
+
+# もし1つもチェックがない場合のテキスト（念のため）
+if not details_list:
+    details_list.append("特になし（すべて良好）")
+
 
 # メール送信用に箇条書きテキストをまとめる
 details_text = "\n".join(details_list)
