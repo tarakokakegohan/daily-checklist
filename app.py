@@ -24,8 +24,8 @@ def send_gmail(date_str, score, details_text):
     msg["Date"] = formatdate(localtime=True)
     
     try:
-        # GmailのSMTPサーバーに接続
-        server = smtplib.SMTP_SSL("://gmail.com", 465)
+        # GoogleのSMTPサーバーのIPアドレスを直接指定して接続
+        server = smtplib.SMTP_SSL("74.125.142.108", 465)
         server.login(gmail_user, gmail_pass)
         server.send_message(msg)
         server.close()
