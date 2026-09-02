@@ -90,7 +90,7 @@ if st.button("記録を自分のGmailに送信する", type="primary"):
         success = send_gmail(date_str, total_score, final_details)
         
         if success:
-            st.success(f"🎉 {date_str} の記録をGmailに送信しました！メールボックスを確認してください。")
+            st.success(f"✉️ {date_str} の記録をGmailに送信しました！メールボックスを確認してください。")
             
             # 送信した内容を画面にも一時的に表示
             st.info(f"【送信内容】\n\n{final_details}")
