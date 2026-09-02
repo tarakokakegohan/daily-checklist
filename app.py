@@ -12,7 +12,7 @@ def send_gmail(date_str, score, details_text):
     
     # メールの本文を作成
     body = f"📅 日付: {date_str}\n"
-    body += f"📊 合計点数: {score} / 10 点\n"
+    body += f"📊 合計点数: {score} / 3 点\n"
     body += "---------------------------\n"
     body += details_text
     
