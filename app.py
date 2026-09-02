@@ -64,7 +64,7 @@ for i, item in enumerate(ITEMS):
         total_score += item["points"]
         details_list.append(f"❗ {item['text']} ({item['points']}点)")
     else:
-        details_list.append(f"   {item['text']}")
+        details_list.append(f"　　{item['text']}")
 
 # メール送信用に箇条書きテキストをまとめる
 details_text = "\n".join(details_list)
