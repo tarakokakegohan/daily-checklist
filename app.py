@@ -83,11 +83,14 @@ st.divider()
 
 # 3. 送信ボタン
 if st.button("記録を自分のGmailに送信する", type="primary"):
+    # 🟢 1つもチェックがない場合は「特になし（すべて良好）」にする処理をここで確定させる
+    final_details = "\n".join(details_list) if details_list else "特になし（すべて良好）"
+    
     with st.spinner("メールを送信中..."):
-        success = send_gmail(date_str, total_score, details_text)
+        success = send_gmail(date_str, total_score, final_details)
         
         if success:
             st.success(f"🎉 {date_str} の記録をGmailに送信しました！メールボックスを確認してください。")
             
             # 送信した内容を画面にも一時的に表示
-            st.info(f"【送信内容】\n\n{details_text}")
+            st.info(f"【送信内容】\n\n{final_details}")
