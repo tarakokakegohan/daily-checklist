@@ -19,7 +19,7 @@ def send_gmail(date_str, score, details_text):
     # メールオブジェクトの設定
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = f"【体調記録】{date_str} ({score}点)"
-    msg["From"] = gmail_user
+    msg["From"] = f"Streamlit App <{gmail_user}>"
     msg["To"] = gmail_user  # 自分宛てに送信
     msg["Date"] = formatdate(localtime=True)
     
