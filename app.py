@@ -48,7 +48,7 @@ def send_gmail(date_str, score, details_text):
         return False
 
 # アプリのタイトル
-st.title("📅 毎日6項目チェック記録 (Gmail送信版)")
+st.title("📅 毎日6項目チェック記録")
 
 # 2. 入力エリア
 st.header("✍️ 今日の記録")
