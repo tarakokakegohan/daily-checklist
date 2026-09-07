@@ -76,7 +76,7 @@ st.metric(label="現在の合計点数", value=f"{total_score} / {THRESHOLD_SCOR
 
 # 基準点数以上になったら警告を表示
 if total_score >= THRESHOLD_SCORE:
-    st.warning("おとなしく休しよう")
+    st.warning("おとなしく休もう")
 
 st.divider()
 
