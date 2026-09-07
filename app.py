@@ -4,6 +4,19 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
+# 🚨 欠席判断の基準点数（3点以上でアウト）
+THRESHOLD_SCORE = 3
+
+# 6つのチェック項目と、それぞれの点数（配点）の設定
+ITEMS = [
+    {"text": "頭が回らない", "points": 2},
+    {"text": "身体がだるい・重い", "points": 1},
+    {"text": "軽めの体調不良", "points": 1},  # 🟢 追加項目
+    {"text": "帰った後洗濯できそうにない", "points": 1},
+    {"text": "普段気にならないことでイライラする", "points": 1},
+    {"text": "明日来れないレベルの体調不良", "points": 3}
+]
+
 # 1. メール送信用の関数
 def send_gmail(date_str, score, details_text):
     # Secretsから情報の読み込み
@@ -12,7 +25,7 @@ def send_gmail(date_str, score, details_text):
     
     # メールの本文を作成
     body = f"📅 日付: {date_str}\n"
-    body += f"📊 合計点数: {score} / 3 点\n"
+    body += f"📊 合計点数: {score} / {THRESHOLD_SCORE} 点\n" # 🟢 基準点数を表示
     body += "---------------------------\n"
     body += details_text
     
@@ -35,25 +48,15 @@ def send_gmail(date_str, score, details_text):
         return False
 
 # アプリのタイトル
-st.title("📅 毎日5項目チェック記録 (Gmail送信版)")
-
-# 5つのチェック項目と、それぞれの点数（配点）の設定
-ITEMS = [
-    {"text": "頭が回らない", "points": 2},
-    {"text": "身体がだるい・重い", "points": 1},
-    {"text": "帰った後洗濯できそうにない", "points": 1},
-    {"text": "普段気にならないことでイライラする", "points": 1},
-    {"text": "明日来れないレベルの体調不良", "points": 3}
-]
+st.title("📅 毎日6項目チェック記録 (Gmail送信版)")
 
 # 2. 入力エリア
 st.header("✍️ 今日の記録")
 selected_date = st.date_input("記録する日付を選択:", date.today())
 date_str = selected_date.strftime("%Y-%m-%d")
 
-# 5つのチェックボックスを表示し、点数を計算する
+# チェックボックスを表示し、点数を計算する
 total_score = 0
-checks = []
 details_list = []
 
 for i, item in enumerate(ITEMS):
@@ -62,28 +65,23 @@ for i, item in enumerate(ITEMS):
     
     if chk:
         total_score += item["points"]
-        # 🟢 チェックがある項目だけをリストに追加する
         details_list.append(f"❗ {item['text']} ({item['points']}点)")
 
 # もし1つもチェックがない場合のテキスト（念のため）
 if not details_list:
     details_list.append("特になし（すべて良好）")
 
-
-# メール送信用に箇条書きテキストをまとめる
-details_text = "\n".join(details_list)
-
 # 💡 リアルタイムで合計点数を表示する
-st.metric(label="現在の合計点数", value=f"{total_score} / 3 点")
+st.metric(label="現在の合計点数", value=f"{total_score} / {THRESHOLD_SCORE} 点")
 
-if total_score >= 3:
+# 🟢 基準点数以上になったら警告を表示
+if total_score >= THRESHOLD_SCORE:
     st.warning("おとなしく休もう")
 
 st.divider()
 
 # 3. 送信ボタン
 if st.button("記録を自分のGmailに送信する", type="primary"):
-    # 🟢 1つもチェックがない場合は「特になし（すべて良好）」にする処理をここで確定させる
     final_details = "\n".join(details_list) if details_list else "特になし（すべて良好）"
     
     with st.spinner("メールを送信中..."):
@@ -91,6 +89,4 @@ if st.button("記録を自分のGmailに送信する", type="primary"):
         
         if success:
             st.success(f"✉️ {date_str} の記録をGmailに送信しました！メールボックスを確認してください。")
-            
-            # 送信した内容を画面にも一時的に表示
             st.info(f"【送信内容】\n\n{final_details}")
