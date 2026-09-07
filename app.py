@@ -11,9 +11,9 @@ THRESHOLD_SCORE = 3
 ITEMS = [
     {"text": "頭が回らない", "points": 2},
     {"text": "身体がだるい・重い", "points": 1},
-    {"text": "軽めの体調不良", "points": 1},  # 🟢 追加項目
     {"text": "帰った後洗濯できそうにない", "points": 1},
     {"text": "普段気にならないことでイライラする", "points": 1},
+    {"text": "軽めの体調不良", "points": 1},  # 🟢 5項目目に移動
     {"text": "明日来れないレベルの体調不良", "points": 3}
 ]
 
@@ -25,7 +25,7 @@ def send_gmail(date_str, score, details_text):
     
     # メールの本文を作成
     body = f"📅 日付: {date_str}\n"
-    body += f"📊 合計点数: {score} / {THRESHOLD_SCORE} 点\n" # 🟢 基準点数を表示
+    body += f"📊 合計点数: {score} / {THRESHOLD_SCORE} 点\n"
     body += "---------------------------\n"
     body += details_text
     
@@ -74,9 +74,9 @@ if not details_list:
 # 💡 リアルタイムで合計点数を表示する
 st.metric(label="現在の合計点数", value=f"{total_score} / {THRESHOLD_SCORE} 点")
 
-# 🟢 基準点数以上になったら警告を表示
+# 基準点数以上になったら警告を表示
 if total_score >= THRESHOLD_SCORE:
-    st.warning("おとなしく休もう")
+    st.warning("おとなしく休しよう")
 
 st.divider()
 
