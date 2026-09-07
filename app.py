@@ -4,18 +4,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
-# 5つのチェック項目と、それぞれの点数（配点）の設定
-ITEMS = [
-    {"text": "頭が回らない", "points": 2},
-    {"text": "身体がだるい・重い", "points": 1},
-    {"text": "帰った後洗濯できそうにない", "points": 1},
-    {"text": "普段気にならないことでイライラする", "points": 1},
-    {"text": "明日来れないレベルの体調不良", "points": 3}
-]
-
-# 全項目の満点を自動計算（2+1+1+1+3 = 8点）
-MAX_SCORE = sum(item["points"] for item in ITEMS)
-
 # 1. メール送信用の関数
 def send_gmail(date_str, score, details_text):
     # Secretsから情報の読み込み
@@ -24,7 +12,7 @@ def send_gmail(date_str, score, details_text):
     
     # メールの本文を作成
     body = f"📅 日付: {date_str}\n"
-    body += f"📊 合計点数: {score} / {MAX_SCORE} 点\n" # 満点を動的に変更
+    body += f"📊 合計点数: {score} / 3 点\n"
     body += "---------------------------\n"
     body += details_text
     
@@ -36,8 +24,8 @@ def send_gmail(date_str, score, details_text):
     msg["Date"] = formatdate(localtime=True)
     
     try:
-        # 🔴 IPアドレスではなく、ホスト名 "://gmail.com" を指定する
-        server = smtplib.SMTP_SSL("://gmail.com", 465)
+        # GoogleのSMTPサーバーのIPアドレスを直接指定して接続
+        server = smtplib.SMTP_SSL("74.125.142.108", 465)
         server.login(gmail_user, gmail_pass)
         server.send_message(msg)
         server.close()
@@ -49,6 +37,15 @@ def send_gmail(date_str, score, details_text):
 # アプリのタイトル
 st.title("📅 毎日5項目チェック記録 (Gmail送信版)")
 
+# 5つのチェック項目と、それぞれの点数（配点）の設定
+ITEMS = [
+    {"text": "頭が回らない", "points": 2},
+    {"text": "身体がだるい・重い", "points": 1},
+    {"text": "帰った後洗濯できそうにない", "points": 1},
+    {"text": "普段気にならないことでイライラする", "points": 1},
+    {"text": "明日来れないレベルの体調不良", "points": 3}
+]
+
 # 2. 入力エリア
 st.header("✍️ 今日の記録")
 selected_date = st.date_input("記録する日付を選択:", date.today())
@@ -56,6 +53,7 @@ date_str = selected_date.strftime("%Y-%m-%d")
 
 # 5つのチェックボックスを表示し、点数を計算する
 total_score = 0
+checks = []
 details_list = []
 
 for i, item in enumerate(ITEMS):
@@ -64,30 +62,35 @@ for i, item in enumerate(ITEMS):
     
     if chk:
         total_score += item["points"]
+        # 🟢 チェックがある項目だけをリストに追加する
         details_list.append(f"❗ {item['text']} ({item['points']}点)")
 
-# もし1つもチェックがない場合のテキスト
+# もし1つもチェックがない場合のテキスト（念のため）
 if not details_list:
     details_list.append("特になし（すべて良好）")
+
 
 # メール送信用に箇条書きテキストをまとめる
 details_text = "\n".join(details_list)
 
 # 💡 リアルタイムで合計点数を表示する
-st.metric(label="現在の合計点数", value=f"{total_score} / {MAX_SCORE} 点")
+st.metric(label="現在の合計点数", value=f"{total_score} / 3 点")
 
 if total_score >= 3:
-    st.warning("おとなしく休しよう")
+    st.warning("おとなしく休もう")
 
 st.divider()
 
 # 3. 送信ボタン
 if st.button("記録を自分のGmailに送信する", type="primary"):
+    # 🟢 1つもチェックがない場合は「特になし（すべて良好）」にする処理をここで確定させる
+    final_details = "\n".join(details_list) if details_list else "特になし（すべて良好）"
+    
     with st.spinner("メールを送信中..."):
-        success = send_gmail(date_str, total_score, details_text)
+        success = send_gmail(date_str, total_score, final_details)
         
         if success:
             st.success(f"✉️ {date_str} の記録をGmailに送信しました！メールボックスを確認してください。")
             
             # 送信した内容を画面にも一時的に表示
-            st.info(f"【送信内容】\n\n{details_text}")
+            st.info(f"【送信内容】\n\n{final_details}")
